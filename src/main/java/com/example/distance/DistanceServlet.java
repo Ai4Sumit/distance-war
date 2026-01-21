@@ -51,10 +51,11 @@ public class DistanceServlet extends HttpServlet {
         }
     }
 
-    // ---------------- Utility methods ----------------
+    /* ---------------- Utility methods ---------------- */
 
-    private static double haversine(double lat1, double lon1,
-                                    double lat2, double lon2) {
+    private static double haversine(
+            double lat1, double lon1,
+            double lat2, double lon2) {
 
         double dLat = Math.toRadians(lat2 - lat1);
         double dLon = Math.toRadians(lon2 - lon1);
@@ -63,23 +64,42 @@ public class DistanceServlet extends HttpServlet {
             Math.sin(dLat / 2) * Math.sin(dLat / 2)
             + Math.cos(Math.toRadians(lat1))
             * Math.cos(Math.toRadians(lat2))
-            a));
-        return EARTH_RADIUS_KM * c;
-    }
+            * Math.sin(dLon / 2) * Math.sin(dLon / 2);
 
-    private static String readBody(HttpServletRequest req) throws IOException {
-        StringBuilder sb = new StringBuilder();
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return EARTH_RADIUS_KM * c;
+   ();
         BufferedReader br = req.getReader();
         String line;
 
         while ((line = br.readLine()) != null) {
             sb.append(line);
         }
-
         return sb.toString();
     }
 
-    private }
+    private static double extract(String json, String key) {
+        Pattern p = Pattern.compile(
+            "\"" + key + "\"\\s*:\\s*(-?\\d+(?:\\.\\d+)?)"
+        );
+        "Missing or invalid '" + key + "'"
+            );
+        }
+        return Double.parseDouble(m.group(1));
+    }
+
+    private static void validateLatLon(double lat, double lon) {
+        if (lat < -90 || lat > 90) {
+            throw new IllegalArgumentException(
+                "Latitude out of range (-90..90)"
+            );
+        }
+        if (lon < -180 || lon > 180) {
+            throw new IllegalArgumentException(
+                "Longitude out of range (-180..180)"
+            );
+        }
+    }
 
     private static String escapeJson(String s) {
         if (s == null) return "";
